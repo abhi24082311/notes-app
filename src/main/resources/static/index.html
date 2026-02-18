@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes App</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        input, textarea { display: block; margin-bottom: 10px; width: 300px; }
+        button { padding: 6px 12px; }
+    </style>
+</head>
+<body>
+
+<h2>Notes App</h2>
+
+<input id="title" placeholder="Title">
+<textarea id="content" placeholder="Content"></textarea>
+<button onclick="addNote()">Add Note</button>
+
+<h3>All Notes</h3>
+<ul id="notes"></ul>
+
+<script>
+    function loadNotes() {
+        fetch('/notes')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('notes');
+                list.innerHTML = '';
+                data.forEach(note => {
+                    const li = document.createElement('li');
+                    li.innerText = note.title + " - " + note.content;
+                    list.appendChild(li);
+                });
+            });
+    }
+
+    function addNote() {
+        fetch('/notes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value
+            })
+        }).then(() => {
+            loadNotes();
+        });
+    }
+
+    loadNotes();
+</script>
+
+</body>
+</html>
