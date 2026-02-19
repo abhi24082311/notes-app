@@ -1,54 +1,450 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Notes App</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes</title>
     <style>
-        body { font-family: Arial; margin: 40px; }
-        input, textarea { display: block; margin-bottom: 10px; width: 300px; }
-        button { padding: 6px 12px; }
+        :root {
+            --bg: #0b0f17;
+            --panel: #0f1623;
+            --panel-2: #0c1320;
+            --text: #e8eef8;
+            --muted: rgba(232, 238, 248, 0.62);
+            --border: rgba(232, 238, 248, 0.12);
+            --border-2: rgba(232, 238, 248, 0.18);
+            --accent: #6aa3ff;
+            --danger: #ff6a6a;
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body { height: 100%; }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .wrap {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 28px 18px 44px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .title h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
+        .title p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .count {
+            font-size: 12px;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            background: var(--panel-2);
+            border-radius: 999px;
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+        }
+
+        .panel h2 {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.02em;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--panel-2);
+            color: var(--text);
+            padding: 10px 10px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.45;
+        }
+
+        input:focus, textarea:focus {
+            border-color: rgba(106, 163, 255, 0.5);
+            box-shadow: 0 0 0 2px rgba(106, 163, 255, 0.18);
+        }
+
+        input::placeholder, textarea::placeholder { color: rgba(232, 238, 248, 0.35); }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        button {
+            border: 1px solid var(--border);
+            background: var(--panel-2);
+            color: var(--text);
+            border-radius: 10px;
+            padding: 9px 10px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        button:hover { border-color: var(--border-2); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .primary {
+            border-color: rgba(106, 163, 255, 0.35);
+            background: rgba(106, 163, 255, 0.14);
+        }
+
+        .hint {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .notes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .note {
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--panel);
+        }
+
+        .note-head {
+            display: flex;
+            align-items: start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .note-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .note-meta {
+            margin-top: 4px;
+            font-size: 11px;
+            color: rgba(232, 238, 248, 0.45);
+        }
+
+        .note-body {
+            margin-top: 10px;
+            font-size: 13px;
+            color: rgba(232, 238, 248, 0.86);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .note-del {
+            border-color: rgba(255, 106, 106, 0.35);
+            background: rgba(255, 106, 106, 0.08);
+            color: rgba(255, 106, 106, 0.95);
+            padding: 7px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            flex: 0 0 auto;
+        }
+
+        .empty {
+            border: 1px dashed var(--border-2);
+            background: var(--panel);
+            border-radius: var(--radius);
+            padding: 18px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%);
+            background: rgba(15, 22, 35, 0.92);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 10px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 140ms ease-out;
+            max-width: min(520px, calc(100% - 24px));
+            text-align: center;
+        }
+
+        .toast.show { opacity: 1; }
+        .toast.error { color: rgba(255, 106, 106, 0.95); }
+        .toast.success { color: rgba(106, 255, 184, 0.95); }
+
+        @media (max-width: 860px) {
+            .layout { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+<div class="wrap">
+    <div class="topbar">
+        <div class="title">
+            <h1>Notes</h1>
 
-<h2>Notes App</h2>
+        </div>
+        <div id="noteCountLabel" class="count">0 notes</div>
+    </div>
 
-<input id="title" placeholder="Title">
-<textarea id="content" placeholder="Content"></textarea>
-<button onclick="addNote()">Add Note</button>
+    <div class="layout">
+        <section class="panel" aria-label="Create note">
+            <h2>New note</h2>
+            <div class="field">
+                <input id="title" type="text" placeholder="Title" autocomplete="off" />
+                <textarea id="content" placeholder="Write something..."></textarea>
+            </div>
+            <div class="actions">
+                <button id="addNoteButton" class="primary" type="button">Save</button>
+                <button id="clearFormButton" type="button">Clear</button>
+            </div>
+            <div class="hint">Tip: <strong>Ctrl + Enter</strong> to save quickly.</div>
+        </section>
 
-<h3>All Notes</h3>
-<ul id="notes"></ul>
+        <section class="notes" aria-label="All notes">
+            <div id="notesEmpty" class="empty" style="display:none;">No notes yet.</div>
+            <div id="notesContainer" class="notes" aria-live="polite"></div>
+        </section>
+    </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-    function loadNotes() {
-        fetch('/notes')
-            .then(res => res.json())
-            .then(data => {
-                const list = document.getElementById('notes');
-                list.innerHTML = '';
-                data.forEach(note => {
-                    const li = document.createElement('li');
-                    li.innerText = note.title + " - " + note.content;
-                    list.appendChild(li);
-                });
+    (function () {
+        const apiBase = "/notes";
+        const titleInput = document.getElementById("title");
+        const contentInput = document.getElementById("content");
+        const addNoteButton = document.getElementById("addNoteButton");
+        const clearFormButton = document.getElementById("clearFormButton");
+        const notesContainer = document.getElementById("notesContainer");
+        const notesEmpty = document.getElementById("notesEmpty");
+        const noteCountLabel = document.getElementById("noteCountLabel");
+        const toastEl = document.getElementById("toast");
+
+        let notes = [];
+        let isSubmitting = false;
+        let toastTimer;
+
+        function toast(message, type) {
+            if (!toastEl) return;
+            toastEl.textContent = message;
+            toastEl.className = "toast show" + (type ? (" " + type) : "");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                toastEl.className = "toast";
+            }, 2400);
+        }
+
+        function updateCounts() {
+            const count = notes.length;
+            noteCountLabel.textContent = count === 1 ? "1 note" : (count + " notes");
+            const hasNotes = count > 0;
+            notesEmpty.style.display = hasNotes ? "none" : "block";
+        }
+
+        function clearForm() {
+            titleInput.value = "";
+            contentInput.value = "";
+            titleInput.focus();
+        }
+
+        function renderNotes() {
+            notesContainer.innerHTML = "";
+            updateCounts();
+
+            if (!notes.length) return;
+
+            notes.slice().reverse().forEach(function (note) {
+                const el = document.createElement("article");
+                el.className = "note";
+
+                const head = document.createElement("div");
+                head.className = "note-head";
+
+                const left = document.createElement("div");
+
+                const h = document.createElement("h3");
+                h.className = "note-title";
+                h.textContent = note.title || "Untitled";
+
+                const meta = document.createElement("div");
+                meta.className = "note-meta";
+                meta.textContent = note.id != null ? ("ID #" + note.id) : "Unsynced";
+
+                left.appendChild(h);
+                left.appendChild(meta);
+
+                const del = document.createElement("button");
+                del.className = "note-del";
+                del.type = "button";
+                del.textContent = "Delete";
+
+                if (note.id != null) {
+                    del.addEventListener("click", function () { deleteNote(note.id); });
+                } else {
+                    del.disabled = true;
+                }
+
+                head.appendChild(left);
+                head.appendChild(del);
+
+                const body = document.createElement("div");
+                body.className = "note-body";
+                body.textContent = note.content || "";
+
+                el.appendChild(head);
+                el.appendChild(body);
+                notesContainer.appendChild(el);
             });
-    }
+        }
 
-    function addNote() {
-        fetch('/notes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                title: document.getElementById('title').value,
-                content: document.getElementById('content').value
+        function loadNotes() {
+            fetch(apiBase)
+                .then(function (res) {
+                    if (!res.ok) throw new Error("Failed to load");
+                    return res.json();
+                })
+                .then(function (data) {
+                    notes = Array.isArray(data) ? data : [];
+                    renderNotes();
+                })
+                .catch(function () {
+                    notes = [];
+                    renderNotes();
+                    toast("Could not load notes from backend.", "error");
+                });
+        }
+
+        function addNote() {
+            if (isSubmitting) return;
+
+            const title = (titleInput.value || "").trim();
+            const content = (contentInput.value || "").trim();
+
+            if (!title && !content) {
+                toast("Add a title or content first.", "error");
+                titleInput.focus();
+                return;
+            }
+
+            isSubmitting = true;
+            addNoteButton.disabled = true;
+            addNoteButton.textContent = "Saving...";
+
+            fetch(apiBase, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: title, content: content })
             })
-        }).then(() => {
-            loadNotes();
+                .then(function (res) {
+                    if (!res.ok) throw new Error("Failed to save");
+                    return res.json();
+                })
+                .then(function () {
+                    clearForm();
+                    toast("Saved.", "success");
+                    loadNotes();
+                })
+                .catch(function () {
+                    toast("Could not save.", "error");
+                })
+                .finally(function () {
+                    isSubmitting = false;
+                    addNoteButton.disabled = false;
+                    addNoteButton.textContent = "Save";
+                });
+        }
+
+        function deleteNote(id) {
+            fetch(apiBase + "/" + encodeURIComponent(id), { method: "DELETE" })
+                .then(function (res) {
+                    if (!res.ok) throw new Error("Failed to delete");
+                    toast("Deleted.", "success");
+                    loadNotes();
+                })
+                .catch(function () {
+                    toast("Could not delete.", "error");
+                });
+        }
+
+        addNoteButton.addEventListener("click", addNote);
+        clearFormButton.addEventListener("click", clearForm);
+        document.addEventListener("keydown", function (event) {
+            const isCtrlEnter = (event.ctrlKey || event.metaKey) && event.key === "Enter";
+            if (isCtrlEnter) {
+                event.preventDefault();
+                addNote();
+            }
         });
-    }
 
-    loadNotes();
+        loadNotes();
+    })();
 </script>
-
 </body>
 </html>
