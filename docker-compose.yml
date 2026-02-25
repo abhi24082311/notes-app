@@ -1,0 +1,7 @@
+services:
+  notesapplication:
+    build: ./
+    image: abhi24082311/notes-application
+    container_name: notes-app
+    ports:
+      - "8080:8080"
